@@ -1,7 +1,5 @@
-const API_KEY = "AIzaSyCez8s-50rKNPSxTUsdET6Sot4Lolj7xkI";
-
-const SEARCH_ENGINE_ID =
-    "f78ddbc8ecc9f416d";
+const API_KEY =
+    "b3389d8ce47c2a473c7820efd50bf5d5b74c05f4699b9e49658520f20204ad9d";
 
 function addMessage(message, className) {
 
@@ -26,7 +24,7 @@ async function searchGoogle(query) {
     try {
 
         const response = await fetch(
-            `https://www.googleapis.com/customsearch/v1?key=${API_KEY}&cx=${SEARCH_ENGINE_ID}&q=${query}`
+            `https://serpapi.com/search.json?q=${query}&api_key=${API_KEY}`
         );
 
         const data = await response.json();
@@ -34,32 +32,39 @@ async function searchGoogle(query) {
         console.log(data);
 
         if (
-            data.items &&
-            data.items.length > 0
+            data.organic_results &&
+            data.organic_results.length > 0
         ) {
 
+            const result =
+                data.organic_results[0];
+
             return `
-                <b>${data.items[0].title}</b>
+                <b>${result.title}</b>
                 <br><br>
 
-                ${data.items[0].snippet}
+                ${result.snippet}
 
                 <br><br>
 
-                <a href="${data.items[0].link}"
+                <a href="${result.link}"
                    target="_blank">
                     Read More
                 </a>
             `;
         }
 
-        return "No Finacle-related results found.";
+        return `
+            No Finacle-related results found.
+        `;
 
     } catch(error) {
 
         console.error(error);
 
-        return "Error fetching Google results.";
+        return `
+            Error searching Google.
+        `;
     }
 }
 
@@ -77,11 +82,14 @@ async function sendMessage() {
 
     input.value = "";
 
-    addMessage("Searching Google...", "bot");
+    addMessage(
+        "Searching Google...",
+        "bot"
+    );
 
     const answer =
         await searchGoogle(
-            "Finacle " + userMessage
+            "Finacle banking " + userMessage
         );
 
     document
@@ -97,6 +105,12 @@ function speakText(text) {
 
     const speech =
         new SpeechSynthesisUtterance(text);
+
+    speech.rate = 1;
+
+    speech.pitch = 1;
+
+    speech.volume = 1;
 
     speechSynthesis.speak(speech);
 }
