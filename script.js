@@ -20,7 +20,7 @@ async function searchGoogle(query) {
 
     try {
 
-        // Call YOUR backend API
+        // Call backend API
         const response = await fetch(
             `/api/search?q=${encodeURIComponent(query)}`
         );
@@ -35,19 +35,58 @@ async function searchGoogle(query) {
             data.organic_results.length > 0
         ) {
 
-            const result =
-                data.organic_results[0];
+            let bestResult = null;
+
+            // Find better result
+            for (
+                let i = 0;
+                i < data.organic_results.length;
+                i++
+            ) {
+
+                const result =
+                    data.organic_results[i];
+
+                const title =
+                    result.title.toLowerCase();
+
+                const snippet =
+                    result.snippet.toLowerCase();
+
+                // Skip generic homepage
+                if (
+                    title.includes(
+                        "digital and core banking"
+                    ) ||
+                    snippet.includes(
+                        "inspire better banking"
+                    )
+                ) {
+                    continue;
+                }
+
+                bestResult = result;
+
+                break;
+            }
+
+            // Fallback
+            if (!bestResult) {
+
+                bestResult =
+                    data.organic_results[0];
+            }
 
             return `
-                <b>${result.title}</b>
+                <b>${bestResult.title}</b>
 
                 <br><br>
 
-                ${result.snippet}
+                ${bestResult.snippet}
 
                 <br><br>
 
-                <a href="${result.link}"
+                <a href="${bestResult.link}"
                    target="_blank">
                     Read More
                 </a>
@@ -86,17 +125,18 @@ async function sendMessage() {
 
     input.value = "";
 
-    // Loading message
+    // Loading
     addMessage(
         "Searching...",
         "bot"
     );
 
-    // Search
+    // Better search query
+    const searchQuery =
+        `${userMessage} Finacle tutorial OR explanation`;
+
     const answer =
-        await searchGoogle(
-            "Finacle banking " + userMessage
-        );
+        await searchGoogle(searchQuery);
 
     // Replace loading message
     const botMessages =
@@ -146,6 +186,14 @@ function startVoice() {
 
     recognition.start();
 
+    recognition.onstart = () => {
+
+        addMessage(
+            "Listening...",
+            "bot"
+        );
+    };
+
     recognition.onresult = (event) => {
 
         const transcript =
@@ -155,6 +203,14 @@ function startVoice() {
             transcript;
 
         sendMessage();
+    };
+
+    recognition.onerror = () => {
+
+        addMessage(
+            "Voice recognition failed.",
+            "bot"
+        );
     };
 }
 
@@ -169,7 +225,9 @@ document.addEventListener(
                 "keypress",
                 function(event) {
 
-                    if (event.key === "Enter") {
+                    if (
+                        event.key === "Enter"
+                    ) {
 
                         sendMessage();
                     }
