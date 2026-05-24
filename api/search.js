@@ -3,7 +3,7 @@ module.exports = async (req, res) => {
     const query = req.query.q;
 
     const API_KEY =
-        "YOUR_NEW_SERPAPI_KEY";
+        "d8e76c549009cf50c134ddefd13834be2359172b31b18be769d290c27bb8ea56";
 
     try {
 
