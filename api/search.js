@@ -3,12 +3,12 @@ module.exports = async (req, res) => {
     const query = req.query.q;
 
     const API_KEY =
-        "d0c732a14f863355259116aeede43b413a0bad66709f879b3b23994cf6bc8a9c";
+        "YOUR_NEW_SERPAPI_KEY";
 
     try {
 
         const response = await fetch(
-            `https://serpapi.com/search.json?q=${query}&api_key=${API_KEY}`
+            `https://serpapi.com/search.json?q=${encodeURIComponent(query)}&api_key=${API_KEY}`
         );
 
         const data = await response.json();
