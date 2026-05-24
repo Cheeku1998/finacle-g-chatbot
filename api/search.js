@@ -1,9 +1,9 @@
-export default async function handler(req, res) {
+module.exports = async (req, res) => {
 
     const query = req.query.q;
 
     const API_KEY =
-        "7a0e8749e7217b565797ea67444d3bd8f754675da580079c125431400b034196";
+        "d0c732a14f863355259116aeede43b413a0bad66709f879b3b23994cf6bc8a9c";
 
     try {
 
@@ -17,8 +17,10 @@ export default async function handler(req, res) {
 
     } catch(error) {
 
+        console.error(error);
+
         res.status(500).json({
             error: "Search failed"
         });
     }
-}
+};
